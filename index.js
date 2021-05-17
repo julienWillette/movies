@@ -12,18 +12,27 @@ app.get("/api/movies", (request, response) => {
   response.status(200).json(movies);
 });
 
-app.get("/api/movies/:id", (request, response) => {
-  // We check if there is a fruit in our array match with the name query
-  // Ex: localhost:3000/fruits?name=Banana
-  if (movies.includes(request.params.id)) {
-    // if the ressource is found, we send back the name
-    response.send(`Here is your ${request.params.id}`);
+app.get("/api/movies/:id", (req, res) => {
+  if (movies.find((movies) => movies.id === parseInt(req.params.id))) {
+    res.status(200).json(movies[req.params.id]);
   } else {
-    // if not we send a sorry message
-    response.send(`Sorry, ${request.params.id} not found...`);
+    res.status(404).send("Not Found");
   }
 });
 
+app.get("/api/search", (req, res) => {
+  if (movies.filter((m) => m.duration < req.query.maxDuration)) {
+    res
+      .status(200)
+      .json(movies.filter((m) => m.duration < req.query.maxDuration));
+  } else {
+    res.status(404).send("We haven't found any matches, sorry!");
+  }
+});
+
+app.get("/api/users", (req, res) => {
+  res.status(401).send("unauthorized");
+});
 
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
